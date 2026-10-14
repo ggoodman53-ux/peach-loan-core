@@ -31,10 +31,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.common.AccountingRuleType;
 import org.apache.fineract.accounting.glaccount.data.GLAccountData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
+import org.apache.fineract.infrastructure.core.data.PaginationParameters;
+import org.apache.fineract.infrastructure.core.data.PaginationParametersDataValidator;
 import org.apache.fineract.infrastructure.core.domain.ExternalId;
 import org.apache.fineract.infrastructure.core.domain.JdbcSupport;
 import org.apache.fineract.infrastructure.core.service.DateUtils;
@@ -88,6 +92,11 @@ import org.springframework.jdbc.core.RowMapper;
 
 public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountReadPlatformService {
 
+    private static final Map<String, String> SORTABLE_COLUMNS = Map.ofEntries(Map.entry("id", "sa.id"), Map.entry("sa.id", "sa.id"),
+            Map.entry("accountNo", "sa.account_no"), Map.entry("sa.account_no", "sa.account_no"), Map.entry("externalId", "sa.external_id"),
+            Map.entry("sa.external_id", "sa.external_id"), Map.entry("clientId", "c.id"), Map.entry("clientName", "c.display_name"),
+            Map.entry("productId", "sp.id"), Map.entry("productName", "sp.name"), Map.entry("officeId", "c.office_id"));
+
     private final PlatformSecurityContext context;
     private final JdbcTemplate jdbcTemplate;
     private final DatabaseSpecificSQLGenerator sqlGenerator;
@@ -104,6 +113,7 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
     private final PaginationHelper paginationHelper;
 
     private final ColumnValidator columnValidator;
+    private final PaginationParametersDataValidator paginationParametersDataValidator = new PaginationParametersDataValidator();
     private final SavingsAccountAssembler savingAccountAssembler;
 
     private final SavingsAccountRepositoryWrapper savingsAccountRepositoryWrapper;
@@ -192,13 +202,13 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
                 sqlBuilder.append(" and c.office_id = ?");
                 objectArray[arrayPos++] = searchParameters.getOfficeId();
             }
+            this.paginationParametersDataValidator.validateParameterValues(PaginationParameters.builder()
+                    .orderBy(searchParameters.getOrderBy()).sortOrder(searchParameters.getSortOrder()).build(), SORTABLE_COLUMNS.keySet(),
+                    "savingsaccount");
             if (searchParameters.hasOrderBy()) {
-                sqlBuilder.append(" order by ").append(searchParameters.getOrderBy());
-                this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getOrderBy());
-
+                sqlBuilder.append(" order by ").append(SORTABLE_COLUMNS.get(searchParameters.getOrderBy()));
                 if (searchParameters.hasSortOrder()) {
-                    sqlBuilder.append(' ').append(searchParameters.getSortOrder());
-                    this.columnValidator.validateSqlInjection(sqlBuilder.toString(), searchParameters.getSortOrder());
+                    sqlBuilder.append(' ').append(searchParameters.getSortOrder().toUpperCase(Locale.ROOT));
                 }
             }
 
