@@ -109,6 +109,8 @@ import org.apache.fineract.portfolio.loanaccount.service.BuyDownFeePlatformServi
 import org.apache.fineract.portfolio.loanaccount.service.BuyDownFeeReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.BuyDownFeeReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.service.BuyDownFeeWritePlatformServiceImpl;
+import org.apache.fineract.portfolio.loanaccount.service.ClientLoanSummaryReadPlatformService;
+import org.apache.fineract.portfolio.loanaccount.service.ClientLoanSummaryReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.service.GLIMAccountInfoReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.service.GLIMAccountInfoReadPlatformServiceImpl;
 import org.apache.fineract.portfolio.loanaccount.service.GLIMAccountInfoWritePlatformService;
@@ -199,6 +201,13 @@ public class LoanAccountConfiguration {
     public BulkLoansReadPlatformService bulkLoansReadPlatformServicev(JdbcTemplate jdbcTemplate, PlatformSecurityContext context,
             AccountDetailsReadPlatformService accountDetailsReadPlatformService) {
         return new BulkLoansReadPlatformServiceImpl(jdbcTemplate, context, accountDetailsReadPlatformService);
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ClientLoanSummaryReadPlatformService.class)
+    public ClientLoanSummaryReadPlatformService clientLoanSummaryReadPlatformService(JdbcTemplate jdbcTemplate,
+            ClientReadPlatformService clientReadPlatformService) {
+        return new ClientLoanSummaryReadPlatformServiceImpl(jdbcTemplate, clientReadPlatformService);
     }
 
     @Bean
