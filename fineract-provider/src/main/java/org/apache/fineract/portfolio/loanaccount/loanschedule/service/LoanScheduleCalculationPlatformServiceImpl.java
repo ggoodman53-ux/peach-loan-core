@@ -65,6 +65,7 @@ public class LoanScheduleCalculationPlatformServiceImpl implements LoanScheduleC
     private final LoanTermVariationsMapper loanTermVariationsMapper;
 
     @Override
+    @Transactional(readOnly = true)
     public LoanScheduleModel calculateLoanSchedule(final JsonQuery query, Boolean validateParams) {
 
         /***

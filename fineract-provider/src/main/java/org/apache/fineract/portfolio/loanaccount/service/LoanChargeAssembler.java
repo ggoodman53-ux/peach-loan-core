@@ -63,7 +63,12 @@ public class LoanChargeAssembler {
     private final ExternalIdFactory externalIdFactory;
     private final LoanChargeService loanChargeService;
 
-    public Set<LoanCharge> fromParsedJson(final JsonElement element, List<LoanDisbursementDetails> disbursementDetails) {
+    /**
+     * @param loan
+     *            the existing loan being modified, or {@code null} for new loan applications and schedule previews.
+     *            Charges referenced by {@code id} must belong to this loan.
+     */
+    public Set<LoanCharge> fromParsedJson(final JsonElement element, List<LoanDisbursementDetails> disbursementDetails, final Loan loan) {
         JsonArray jsonDisbursement = this.fromApiJsonHelper.extractJsonArrayNamed("disbursementData", element);
         List<Long> disbursementChargeIds = new ArrayList<>();
 
@@ -207,8 +212,7 @@ public class LoanChargeAssembler {
                             }
                         }
                     } else {
-                        final LoanCharge loanCharge = this.loanChargeRepository.findById(loanChargeId)
-                                .orElseThrow(() -> new LoanChargeNotFoundException(loanChargeId));
+                        final LoanCharge loanCharge = findLoanChargeOfLoan(loanChargeId, loan);
 
                         if (!loanCharge.isTrancheDisbursementCharge() || disbursementChargeIds.contains(loanChargeId)) {
                             loanChargeService.update(loanCharge, amount, dueDate, numberOfRepayments);
@@ -221,6 +225,18 @@ public class LoanChargeAssembler {
         }
 
         return loanCharges;
+    }
+
+    private LoanCharge findLoanChargeOfLoan(final Long loanChargeId, final Loan loan) {
+        if (loan == null || loan.getId() == null) {
+            throw new LoanChargeNotFoundException(loanChargeId);
+        }
+        final LoanCharge loanCharge = this.loanChargeRepository.findById(loanChargeId)
+                .orElseThrow(() -> new LoanChargeNotFoundException(loanChargeId, loan.getId()));
+        if (loanCharge.getLoan() == null || !loan.getId().equals(loanCharge.getLoan().getId())) {
+            throw new LoanChargeNotFoundException(loanChargeId, loan.getId());
+        }
+        return loanCharge;
     }
 
     public Set<Charge> getNewLoanTrancheCharges(final JsonElement element) {

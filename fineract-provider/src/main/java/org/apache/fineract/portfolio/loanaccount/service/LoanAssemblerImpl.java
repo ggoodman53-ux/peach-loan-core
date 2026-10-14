@@ -210,7 +210,7 @@ public class LoanAssemblerImpl implements LoanAssembler {
             collateral = this.collateralAssembler.fromParsedJson(element);
         }
 
-        final Set<LoanCharge> loanCharges = this.loanChargeAssembler.fromParsedJson(element, disbursementDetails);
+        final Set<LoanCharge> loanCharges = this.loanChargeAssembler.fromParsedJson(element, disbursementDetails, null);
 
         BigDecimal fixedPrincipalPercentagePerInstallment = fromApiJsonHelper
                 .extractBigDecimalWithLocaleNamed(LoanApiConstants.fixedPrincipalPercentagePerInstallmentParamName, element);
@@ -470,7 +470,7 @@ public class LoanAssemblerImpl implements LoanAssembler {
          * Stores all charges which are passed in during modify loan application
          **/
         final Set<LoanCharge> possiblyModifiedLoanCharges = this.loanChargeAssembler.fromParsedJson(command.parsedJson(),
-                disbursementDetails);
+                disbursementDetails, loan);
         /** Boolean determines if any charge has been modified **/
         boolean isChargeModified = false;
 
