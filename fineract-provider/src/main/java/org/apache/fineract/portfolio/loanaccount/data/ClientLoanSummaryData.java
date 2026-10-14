@@ -18,6 +18,7 @@
  */
 package org.apache.fineract.portfolio.loanaccount.data;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class ClientLoanSummaryData {
     private final String productName;
     private final BigDecimal principal;
     private final BigDecimal outstandingBalance;
+    @Schema(description = "Earliest due date among the loan's incomplete installments. Omitted from the response when no installment is outstanding.")
     private final LocalDate nextInstallmentDueDate;
     private final LoanStatusEnumData status;
 }
