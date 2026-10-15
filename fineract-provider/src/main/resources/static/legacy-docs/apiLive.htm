@@ -309,6 +309,14 @@
 								<td></td>
 								<td></td>
 							</tr>
+							<tr>
+								<td></td>
+								<td>clients/{clientId}/loansummary</td>
+								<td></td>
+								<td><a href="#clients_activeloansummary">Retrieve a client's active loan summary</a></td>
+								<td></td>
+								<td></td>
+							</tr>
                             <tr>
                                 <td><a href="#client_address">Client Address</a></td>
                                 <td>client/{clientId}/addresses</td>
@@ -6623,6 +6631,91 @@ GET https://DomainName/api/v1/clients/{clientId}/accounts
     ]
 }</code>
                 </div>
+			</div>
+
+			<a id="clients_activeloansummary" name="clients_activeloansummary" class="old-syle-anchor">&nbsp;</a>
+			<div class="method-section">
+				<div class="method-description">
+					<h4>Retrieve a client's active loan summary</h4>
+					<p>Read-only list of the client's <b>Active</b> loans (loan status 300), ordered by loan id. Loans in any other status (pending, approved, closed, overpaid, ...) are not included. An empty list is returned if the client has no active loans.</p>
+					<p>Requires the <b>READ_LOAN</b> permission. If the client does not exist, or is outside the calling user's office hierarchy, a 404 is returned.</p>
+					<table class=matrixHeading>
+						<tr class="matrixHeadingBG">
+							<td><div class="fineractHeading2">Field Descriptions</div></td>
+						</tr>
+						<tr class=alt>
+							<td>id</td>
+						</tr>
+						<tr>
+							<td class=fielddesc>Loan id.</td>
+						</tr>
+						<tr class=alt>
+							<td>productName</td>
+						</tr>
+						<tr>
+							<td class=fielddesc>Name of the loan product.</td>
+						</tr>
+						<tr class=alt>
+							<td>principal</td>
+						</tr>
+						<tr>
+							<td class=fielddesc>The loan's principal amount.</td>
+						</tr>
+						<tr class=alt>
+							<td>outstandingBalance</td>
+						</tr>
+						<tr>
+							<td class=fielddesc>Total amount still outstanding on the loan.</td>
+						</tr>
+						<tr class=alt>
+							<td>nextInstallmentDueDate</td>
+						</tr>
+						<tr>
+							<td class=fielddesc>Earliest due date among the loan's installments that are not yet completed, as [year, month, day].<br>
+								Optional: the field is omitted from the response (not returned as null) when no installment is outstanding.</td>
+						</tr>
+						<tr class=alt>
+							<td>status</td>
+						</tr>
+						<tr>
+							<td class=fielddesc>Loan status (always <b>Active</b> for this endpoint).</td>
+						</tr>
+					</table>
+					<p>Example Requests:</p>
+					<div class=apiClick>clients/1/loansummary</div>
+				</div>
+				<div class="method-example">
+					<code class="method-declaration">
+GET https://DomainName/api/v1/clients/{clientId}/loansummary
+					</code>
+					<code class="method-response">
+[
+    {
+        "id": 82,
+        "productName": "Growth Loan",
+        "principal": 1250.00,
+        "outstandingBalance": 875.50,
+        "nextInstallmentDueDate": [
+            2025,
+            4,
+            15
+        ],
+        "status": {
+            "id": 300,
+            "code": "loanStatusType.active",
+            "value": "Active",
+            "pendingApproval": false,
+            "waitingForDisbursal": false,
+            "active": true,
+            "closedObligationsMet": false,
+            "closedWrittenOff": false,
+            "closedRescheduled": false,
+            "closed": false,
+            "overpaid": false
+        }
+    }
+]</code>
+				</div>
 			</div>
 
             <!-- start of entity field configuration api -->
@@ -53080,6 +53173,14 @@ Request Body:
 					<td>clients/{clientId}/accounts</td>
 					<td></td>
 					<td><a href="#clients_loansummary">Retrieve client accounts overview</a></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>clients/{clientId}/loansummary</td>
+					<td></td>
+					<td><a href="#clients_activeloansummary">Retrieve a client's active loan summary</a></td>
 					<td></td>
 					<td></td>
 				</tr>

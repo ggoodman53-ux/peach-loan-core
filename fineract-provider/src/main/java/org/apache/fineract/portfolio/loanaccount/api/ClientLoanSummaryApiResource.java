@@ -52,10 +52,10 @@ public class ClientLoanSummaryApiResource {
     @GET
     @Produces({ MediaType.APPLICATION_JSON })
     @Operation(summary = "Retrieve a client's active loan summary", operationId = "retrieveClientLoanSummary", description = "Lists the client's active loans with id, product name, principal, outstanding balance, next installment due date and status.\n\nExample Request:\n\nclients/1/loansummary\n\nnextInstallmentDueDate is omitted when the loan has no outstanding installment (null fields are not serialized, as in other Fineract endpoints).")
-    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientLoanSummaryData.class))))
+    @ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ClientLoanSummaryApiResourceSwagger.GetClientsClientIdLoanSummaryResponse.class))))
     @ApiResponse(responseCode = "404", description = "Client not found")
     public String retrieveClientLoanSummary(
-            @PathParam("clientId") @Parameter(description = "clientId", required = true) final Long clientId) {
+            @PathParam("clientId") @Parameter(description = "clientId", required = true, example = "1") final Long clientId) {
         this.context.authenticatedUser().validateHasReadPermission(RESOURCE_NAME_FOR_PERMISSIONS);
         return this.toApiJsonSerializer.serialize(this.clientLoanSummaryReadPlatformService.retrieveActiveLoanSummaries(clientId));
     }
